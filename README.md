@@ -1,4 +1,4 @@
-[my-pdf](./me.pdf)
+[my-pdf](./pdf.html)
 
 <div dir="rtl" style="box-sizing: border-box; display: flex; flex-direction: column; gap: 20px; padding: 20px; background-color: #f5f5f5;">
 
