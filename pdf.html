@@ -1,3 +1,105 @@
-<iframe src="./me.pdf"></iframe>
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDF Viewer با ورق زدن</title>
+    <style>
+        body {
+            direction: rtl;
+            background-color: #f0f0f0;
+            text-align: center;
+        }
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
+        #pdf-viewer {
+            width: 90%;
+            max-width: 900px;
+            margin: 20px auto;
+            border: 1px solid #ddd;
+        }
+
+        .nav-buttons {
+            margin: 10px;
+        }
+
+        button {
+            padding: 10px;
+            margin: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h2>نمایش PDF به حالت کتاب</h2>
+    <div class="nav-buttons">
+        <button id="prev-page">صفحه قبلی</button>
+        <span id="page-num">صفحه 1</span> از <span id="page-count">100</span>
+        <button id="next-page">صفحه بعدی</button>
+    </div>
+    <canvas id="pdf-viewer"></canvas>
+
+    <!-- اضافه کردن PDF.js از CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
+    <script>
+        // متغیرهای مربوط به PDF
+        let pdfDoc = null,
+            pageNum = 1,
+            pageRendering = false,
+            pageNumPending = null,
+            scale = 1.5,
+            canvas = document.getElementById('pdf-viewer'),
+            ctx = canvas.getContext('2d');
+
+        // بارگذاری PDF
+        pdfjsLib.getDocument('./me.pdf').promise.then(function(pdf) {
+            pdfDoc = pdf;
+            document.getElementById('page-count').textContent = pdf.numPages;
+            renderPage(pageNum);
+        });
+
+        // رندر کردن صفحه
+        function renderPage(num) {
+            pageRendering = true;
+            pdfDoc.getPage(num).then(function(page) {
+                let viewport = page.getViewport({ scale: scale });
+                canvas.height = viewport.height;
+                canvas.width = viewport.width;
+
+                let renderContext = {
+                    canvasContext: ctx,
+                    viewport: viewport
+                };
+
+                let renderTask = page.render(renderContext);
+                renderTask.promise.then(function() {
+                    pageRendering = false;
+                    if (pageNumPending !== null) {
+                        renderPage(pageNumPending);
+                        pageNumPending = null;
+                    }
+                });
+            });
+
+            document.getElementById('page-num').textContent = num;
+        }
+
+        // نمایش صفحه بعدی
+        document.getElementById('next-page').addEventListener('click', function() {
+            if (pageNum >= pdfDoc.numPages) {
+                return;
+            }
+            pageNum++;
+            renderPage(pageNum);
+        });
+
+        // نمایش صفحه قبلی
+        document.getElementById('prev-page').addEventListener('click', function() {
+            if (pageNum <= 1) {
+                return;
+            }
+            pageNum--;
+            renderPage(pageNum);
+        });
+    </script>
+</body>
+</html>
