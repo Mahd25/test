@@ -1,7 +1,7 @@
 @font-face {
     font-family: 'Vazir';
-    src: url('../fonts/Vazir-Variable.woff') format('woff'),
-        url('../fonts/Vazir-Variable.woff2') format('woff2');
+    src: url('https://mahd25.github.io/assets/fonts/Vazir-Variable.woff') format('woff'),
+        url('https://mahd25.github.io/assets/fonts/Vazir-Variable.woff2') format('woff2');
     /* font-weight: bold; */
     font-style: normal;
 }
